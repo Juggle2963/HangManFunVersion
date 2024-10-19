@@ -1,36 +1,64 @@
 ﻿using System.ComponentModel;
 using System.Text;
+using System.Text.Json;
 using System.Xml;
 
 namespace scratch2;
 
 internal class Program
 {
+    static List<Tuple<string, double>> highscore = new List<Tuple<string, double>>();
     static double correctGuesses;
     static string[] MenuText;
     static string chosenWord = string.Empty;
     static char[] wordShowedForPlayer;
-     static PlayerInfo player;
+    static PlayerInfo player;
+    static string jsonHighscoreFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Highscore.json");
     static void Main(string[] args)
     {
-        CreateWord();
-        int playerChoice = WelcomeScreen();
+        try
+        {
+            CreateWord();
+            LoadHighscore();
+            int playerChoice = WelcomeScreen();
 
-        if (playerChoice == 0)
-            CreatePlayer();
+            if (playerChoice == 0)
+                CreatePlayer();
 
-        Rungame();
+            Rungame();
 
+        }
+        catch (FileNotFoundException)
+        {
 
+        }
+        catch (Exception)
+        {
 
+            throw;
+        }
 
+    }
 
+    private static void LoadHighscore()
+    {
+        string fromJson = File.ReadAllText(jsonHighscoreFilePath);
+        try
+        {
+            highscore = JsonSerializer.Deserialize<List<Tuple<string, double>>>(fromJson)!;
 
+        }
+        catch (FileNotFoundException)
+        {
+
+            throw new FileNotFoundException(fromJson);
+        }
     }
 
     private static void Rungame()
     {
-            Ascii.PrintHangmanLogoGreen(Ascii.asci);
+        List<char> checkForGuessedLetter = new List<char>();
+        Ascii.PrintHangmanLogoGreen(Ascii.asci);
 
         for (int i = 0; i < Ascii.HangAround.Length; i++)
         {
@@ -38,34 +66,51 @@ internal class Program
 
             while (!wordShowedForPlayer.SequenceEqual(chosenWord))
             {
-               ClearLine();
+                ClearLine();
                 Array.ForEach(wordShowedForPlayer, c => Console.Write(c));
-                ClearLine2();
-                Console.Write("Guess letter: ");
-                guessedletter=Console.ReadKey().KeyChar;
+
+                bool check = true;
+                do
+                {
+                    check = false;
+
+                    ClearLine2();
+                    Console.Write("Guess letter: ");
+                    guessedletter = Console.ReadKey().KeyChar;
+                    if (checkForGuessedLetter.Contains(guessedletter))
+                    {
+                        ClearLine2();
+                        Console.Write("you have tried that letter before - guess once more");
+                        Thread.Sleep(2000);
+                        check = true;
+                    }
+                } while (check);
+                checkForGuessedLetter.Add(guessedletter);
+
+                player.totalTries++;
                 ClearLine();
 
                 for (int j = 0; j < chosenWord.Length; j++)
                 {
                     if (chosenWord[j] == guessedletter)
+                    {
                         wordShowedForPlayer[j] = guessedletter;
-                    
-                    player.totalTries++;
-                    correctGuesses++;
+                        correctGuesses++;
+
+                    }
+
                 }
-                if (wordShowedForPlayer.SequenceEqual(chosenWord))
-                {
-                    PlayerWin();
-                }
-     
                 if (!chosenWord.Contains(guessedletter))
-                {
-                    player.totalTries++;
                     break;
-                }
+
             }
+            if (wordShowedForPlayer.SequenceEqual(chosenWord))
+            {
+                PlayerWin();
+            }
+
             ClearLineBottomPic();
-            Console.Write(Ascii.HangAround[i]); 
+            Console.Write(Ascii.HangAround[i]);
         }
         PlayerLose();
     }
@@ -98,13 +143,37 @@ internal class Program
 
     private static void PlayerWin()
     {
-       double finalPercentage = correctGuesses / player.totalTries *100; // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
-        
-        
+        Console.Clear();
+        Ascii.PrintHangmanLogoGreen(Ascii.asci);
 
-        var highscore = new List<Tuple<string, double>>();
+        double finalPercentage = correctGuesses / player.totalTries * 100; // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
+
+
 
         highscore.Add(Tuple.Create(player.Name, finalPercentage));
+
+        highscore = highscore.OrderByDescending(highscore => highscore.Item2).ToList(); //Sorterar Tuple listan efter högst procent
+
+        string toJson = JsonSerializer.Serialize(highscore);
+
+        File.WriteAllText(jsonHighscoreFilePath, toJson);
+
+
+        ClearLine();
+        Console.Write($"Congrats {player.Name}, you had a guessratio of {finalPercentage}");
+        ClearLine2();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Press any button.....");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("Highscore");
+
+        PrintHighscore();
+
+        Console.ReadKey(true);
+        Main(new string[0]);
+
+
+
     }
 
     private static void CreatePlayer()
@@ -147,7 +216,7 @@ internal class Program
     {
         Ascii.PrintHangmanLogoYellow(Ascii.asci);
 
-        MenuText = [ "1player", "2player", "Highscore", "Exit"];
+        MenuText = ["1player", "2player", "Highscore", "Exit"];
         const int cursorXpos = 20;
         const int cursorYpos = 14;
 
@@ -192,6 +261,8 @@ internal class Program
                 case ConsoleKey.Enter:
                     if (currentChoice == 3)
                         key = ConsoleKey.Escape;
+                    else if (currentChoice == 2)
+                        PrintHighscore();
                     else
                         return currentChoice;
                     break;
@@ -221,9 +292,11 @@ internal class Program
         }
     }
 
-
-
-
-
-
+    private static void PrintHighscore()
+    {
+        foreach (var score in highscore)
+        {
+            Console.WriteLine($"- {score.Item1} -- {score.Item2} -");
+        }
+    }
 }
