@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -37,7 +38,13 @@ internal class Program
 
             throw;
         }
+    }
 
+    private static void SaveHighScore()
+    {
+        string toJson = JsonSerializer.Serialize(highscore);
+
+        File.WriteAllText(jsonHighscoreFilePath, toJson);
     }
 
     private static void LoadHighscore()
@@ -119,7 +126,9 @@ internal class Program
     {
         Console.SetCursorPosition(1, 20);
         //Console.Write(new string(' ', Console.BufferWidth));
+        //Console.Write(new string(' ', Console.BufferHeight));
         //Console.SetCursorPosition(28, 20);
+        
     }
     private static void ClearLine()
     {
@@ -146,7 +155,8 @@ internal class Program
         Console.Clear();
         Ascii.PrintHangmanLogoGreen(Ascii.asci);
 
-        double finalPercentage = correctGuesses / player.totalTries * 100; // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
+        double finalPercentage = Math.Round( correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
+        //Math.Round(finalPercentage);
 
 
 
@@ -154,26 +164,34 @@ internal class Program
 
         highscore = highscore.OrderByDescending(highscore => highscore.Item2).ToList(); //Sorterar Tuple listan efter högst procent
 
-        string toJson = JsonSerializer.Serialize(highscore);
+        if (highscore.Count > 5)
+            highscore = highscore.Take(5).ToList();
 
-        File.WriteAllText(jsonHighscoreFilePath, toJson);
+        SaveHighScore();
 
 
         ClearLine();
-        Console.Write($"Congrats {player.Name}, you had a guessratio of {finalPercentage}");
+        Console.Write($"Congrats {player.Name}, you managed to get {finalPercentage} points");
         ClearLine2();
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Press any button.....");
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("Highscore");
 
         PrintHighscore();
 
         Console.ReadKey(true);
-        Main(new string[0]);
 
+        Restart();
 
+    }
 
+    private static void Restart()
+    {
+        //Process.Start(Environment.GetCommandLineArgs()[0]);
+        //string path = Process.GetCurrentProcess().MainModule.FileName;
+        string? pathToExe = Environment.ProcessPath;
+        Process.Start(pathToExe!);
+
+        Environment.Exit(0);
     }
 
     private static void CreatePlayer()
@@ -216,7 +234,7 @@ internal class Program
     {
         Ascii.PrintHangmanLogoYellow(Ascii.asci);
 
-        MenuText = ["1player", "2player", "Highscore", "Exit"];
+        MenuText = ["1player", "Reset highscore", "Highscore", "Exit"];
         const int cursorXpos = 20;
         const int cursorYpos = 14;
 
@@ -259,10 +277,28 @@ internal class Program
                         currentChoice += 2;
                     break;
                 case ConsoleKey.Enter:
-                    if (currentChoice == 3)
-                        key = ConsoleKey.Escape;
-                    else if (currentChoice == 2)
+                    if (currentChoice == 1)
+                    {
+                        highscore.Clear();
+                        ClearLine2();
+                        Console.WriteLine("deleting highscore.....");
+                        Thread.Sleep(3000);
+                        ClearLine2();
+                        Console.WriteLine("Higscore deleted succesfully");
+                        Thread.Sleep(3000);
+                        SaveHighScore();
+                        LoadHighscore();
+                        ClearLineBottomPic();
                         PrintHighscore();
+                    }
+                    else if (currentChoice == 2) 
+                    { 
+                        ClearLineBottomPic();
+                        PrintHighscore();
+             
+                    }
+                    else if (currentChoice == 3)
+                        key = ConsoleKey.Escape;
                     else
                         return currentChoice;
                     break;
@@ -275,11 +311,15 @@ internal class Program
             }
         } while (key != ConsoleKey.Escape);
         Console.Clear();
+        Ascii.PrintHangmanLogoGreen(Ascii.asci);
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("Vill du verkligen avsluta spelet?\n[y][n]");
-        key = Console.ReadKey(true).Key;
+        ClearLine();
+        Console.WriteLine("Vill du verkligen avsluta spelet?");
+        ClearLine2();
+        Console.WriteLine("[y] [n]");
         while (true)
         {
+        key = Console.ReadKey(true).Key;
             if (key == ConsoleKey.Y)
                 Environment.Exit(0);
             else if (key == ConsoleKey.N)
@@ -294,9 +334,17 @@ internal class Program
 
     private static void PrintHighscore()
     {
+        Console.ForegroundColor= ConsoleColor.Green;
+        Console.WriteLine("Highscore");
+        Console.ForegroundColor=ConsoleColor.Blue;
+        //string formt= string.Format()
         foreach (var score in highscore)
         {
-            Console.WriteLine($"- {score.Item1} -- {score.Item2} -");
+            var writeTable = string.Format("{0,-10} {1,4}", score.Item1, (int)score.Item2);
+            Console.WriteLine(writeTable);
         }
+       
+            
+        
     }
 }
