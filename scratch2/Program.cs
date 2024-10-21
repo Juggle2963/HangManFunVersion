@@ -29,14 +29,13 @@ internal class Program
             Rungame();
 
         }
-        catch (FileNotFoundException)
+        catch (FileNotFoundException e)
         {
-
+            
         }
         catch (Exception)
         {
 
-            throw;
         }
     }
 
@@ -55,10 +54,9 @@ internal class Program
             highscore = JsonSerializer.Deserialize<List<Tuple<string, double>>>(fromJson)!;
 
         }
-        catch (FileNotFoundException)
+        catch (FileNotFoundException e)
         {
-
-            throw new FileNotFoundException(fromJson);
+            throw new Exception();
         }
     }
 
@@ -125,10 +123,14 @@ internal class Program
     private static void ClearLineBottomPic()
     {
         Console.SetCursorPosition(1, 20);
-        //Console.Write(new string(' ', Console.BufferWidth));
-        //Console.Write(new string(' ', Console.BufferHeight));
-        //Console.SetCursorPosition(28, 20);
-        
+
+        for (int i = 20; i < 26; i++)
+        {
+            Console.SetCursorPosition(1, i);
+            Console.Write(new string(' ', Console.BufferWidth));
+        }
+        Console.SetCursorPosition(1, 20);
+
     }
     private static void ClearLine()
     {
@@ -147,7 +149,29 @@ internal class Program
 
     private static void PlayerLose()
     {
-        throw new NotImplementedException();
+        ClearLine();
+        Console.Write("lost! - Do you want to play again?");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        ClearLine2();
+        Console.Write("[y] [n]");
+        ClearLineBottomPic();
+        Console.Write(Ascii.HangAround[Ascii.HangAround.Length-1]);
+        ConsoleKey key;
+        key = Console.ReadKey().Key;
+
+        while (true)
+        {
+            //key = Console.ReadKey(true).Key;
+            if (key == ConsoleKey.Y)
+                Restart();
+            else if (key == ConsoleKey.N)
+            {
+                Environment.Exit(0);
+            }
+            Console.WriteLine("fel val välj igen");
+            Thread.Sleep(2000);
+        }
+
     }
 
     private static void PlayerWin()
@@ -155,7 +179,7 @@ internal class Program
         Console.Clear();
         Ascii.PrintHangmanLogoGreen(Ascii.asci);
 
-        double finalPercentage = Math.Round( correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
+        double finalPercentage = Math.Round(correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
         //Math.Round(finalPercentage);
 
 
@@ -286,16 +310,17 @@ internal class Program
                         ClearLine2();
                         Console.WriteLine("Higscore deleted succesfully");
                         Thread.Sleep(3000);
+                        ClearLine2();
                         SaveHighScore();
                         LoadHighscore();
                         ClearLineBottomPic();
                         PrintHighscore();
                     }
-                    else if (currentChoice == 2) 
-                    { 
+                    else if (currentChoice == 2)
+                    {
                         ClearLineBottomPic();
                         PrintHighscore();
-             
+
                     }
                     else if (currentChoice == 3)
                         key = ConsoleKey.Escape;
@@ -319,13 +344,12 @@ internal class Program
         Console.WriteLine("[y] [n]");
         while (true)
         {
-        key = Console.ReadKey(true).Key;
+            key = Console.ReadKey(true).Key;
             if (key == ConsoleKey.Y)
                 Environment.Exit(0);
             else if (key == ConsoleKey.N)
             {
-                Console.Clear();
-                WelcomeScreen();
+                Restart();
             }
             Console.WriteLine("fel val välj igen");
             Thread.Sleep(2000);
@@ -334,17 +358,17 @@ internal class Program
 
     private static void PrintHighscore()
     {
-        Console.ForegroundColor= ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Highscore");
-        Console.ForegroundColor=ConsoleColor.Blue;
+        Console.ForegroundColor = ConsoleColor.Blue;
         //string formt= string.Format()
         foreach (var score in highscore)
         {
             var writeTable = string.Format("{0,-10} {1,4}", score.Item1, (int)score.Item2);
             Console.WriteLine(writeTable);
         }
-       
-            
-        
+
+
+
     }
 }
