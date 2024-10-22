@@ -11,12 +11,12 @@ internal class Program
 {
     static List<Tuple<string, double>> highscore = new List<Tuple<string, double>>();
     static double correctGuesses;
-    static string[] MenuText;
+    static string[]? MenuText;
     static string chosenWord = string.Empty;
-    static char[] wordShowedForPlayer;
-    static PlayerInfo player;
+    static char[]? wordShowedForPlayer;
+    static PlayerInfo? player;
     static string jsonHighscoreFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Highscore.json");
-    static Ascii graphic;
+    static Ascii? graphic = new Ascii();
     static void Main(string[] args)
     {
         try
@@ -39,6 +39,10 @@ internal class Program
         {
             Console.WriteLine($"Något gick fel{e}");
         }
+        finally
+        {
+
+        }
     }
 
     private static void SaveHighScore()
@@ -56,25 +60,24 @@ internal class Program
             highscore = JsonSerializer.Deserialize<List<Tuple<string, double>>>(fromJson)!;
 
         }
-        catch (FileNotFoundException e)
+        catch (FileNotFoundException)
         {
-            throw new Exception();
         }
     }
 
     private static void Rungame()
     {
         List<char> checkForGuessedLetter = new List<char>();
-        graphic.PrintHangmanLogoGreen();
+        graphic!.PrintHangmanLogoGreen();
 
-        for (int i = 0; i < Ascii.HangAroundPic.Length; i++)
+        for (int i = 0; i < graphic.HangAroundPic.Length; i++)
         {
             char guessedletter;
 
-            while (!wordShowedForPlayer.SequenceEqual(chosenWord))
+            while (!wordShowedForPlayer!.SequenceEqual(chosenWord))
             {
                 ClearLine();
-                Array.ForEach(wordShowedForPlayer, c => Console.Write(c));
+                Array.ForEach(wordShowedForPlayer!, c => Console.Write(c));
 
                 bool check = true;
                 do
@@ -94,14 +97,14 @@ internal class Program
                 } while (check);
                 checkForGuessedLetter.Add(guessedletter);
 
-                player.totalTries++;
+                player!.TotalTries++;
                 ClearLine();
 
                 for (int j = 0; j < chosenWord.Length; j++)
                 {
                     if (chosenWord[j] == guessedletter)
                     {
-                        wordShowedForPlayer[j] = guessedletter;
+                        wordShowedForPlayer![j] = guessedletter;
                         correctGuesses++;
 
                     }
@@ -111,13 +114,13 @@ internal class Program
                     break;
 
             }
-            if (wordShowedForPlayer.SequenceEqual(chosenWord))
+            if (wordShowedForPlayer!.SequenceEqual(chosenWord))
             {
                 PlayerWin();
             }
 
             ClearLineBottomPic();
-            Console.Write(Ascii.HangAroundPic[i]);
+            Console.Write(graphic.HangAroundPic[i]);
         }
         PlayerLose();
     }
@@ -157,7 +160,7 @@ internal class Program
         ClearLine2();
         Console.Write("[y] [n]");
         ClearLineBottomPic();
-        Console.Write(Ascii.HangAroundPic[Ascii.HangAroundPic.Length-1]);
+        Console.Write(graphic!.HangAroundPic[graphic.HangAroundPic.Length-1]);
         ConsoleKey key;
         key = Console.ReadKey().Key;
 
@@ -179,9 +182,9 @@ internal class Program
     private static void PlayerWin()
     {
         Console.Clear();
-        graphic.PrintHangmanLogoGreen();
+        graphic!.PrintHangmanLogoGreen();
 
-        double finalPercentage = Math.Round(correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
+        double finalPercentage = Math.Round(correctGuesses / player!.TotalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
         //Math.Round(finalPercentage);
 
 
@@ -222,7 +225,7 @@ internal class Program
 
     private static void CreatePlayer()
     {
-        graphic.PrintHangmanLogoGreen();
+        graphic!.PrintHangmanLogoGreen();
 
         Console.CursorVisible = false;
         Console.SetCursorPosition(28, 15);
@@ -230,7 +233,7 @@ internal class Program
 
         Console.Write("Enter players name: ");
         string? input = Console.ReadLine();
-        while (input.Length < 2)
+        while (input!.Length < 2)
         {
             Console.WriteLine("Players name must be atleast 2 letters");
             input = Console.ReadLine();
@@ -258,7 +261,7 @@ internal class Program
 
     static int WelcomeScreen()
     {
-        graphic.PrintHangmanLogoYellow();
+        graphic!.PrintHangmanLogoYellow();
 
         MenuText = ["1player", "Reset highscore", "Highscore", "Exit"];
         const int cursorXpos = 20;

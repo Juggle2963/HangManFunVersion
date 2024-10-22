@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace scratch2;
 internal class PlayerInfo
 {
-    public double totalTries { get; set; }
-    public double numbOfCorrectGuesses { get; set; }
+    public double TotalTries { get; set; }
+    public double NumbOfCorrectGuesses { get; set; }
 
     private string? _name;
 
@@ -18,7 +18,7 @@ internal class PlayerInfo
 		set 
 		{
 			if (value.Length < 2)
-				throw new ArgumentException("player name cant be less then two character");
+				value = "unknown";
 			_name = value; 
 		}
 	}

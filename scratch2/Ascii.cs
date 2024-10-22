@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace scratch2;
 internal class Ascii
 {
-    static string asci = " /$$   /$$                               /$$      /$$                    \r\n| $$  | $$                              " +
+    string LogoHangMan { get; } = " /$$   /$$                               /$$      /$$                    \r\n| $$  | $$                              " +
          "\r| $$$    /$$$                    \r\n| $$  | $$  /$$$$$$  /$$$$$$$   /$$$$$$ | $$$$  /$$$$  /$$$$$$  \r" +
          "/$$$$$$$ \r\n| $$$$$$$$ |____  $$| $$__  $$ /$$__  $$| $$ $$/$$ $$ |____  " +
          "$$| $$__  $$\r\n| $$__  $$  /$$$$$$$| $$  \\ $$| $$  \\ $$| $$  $$$| $$  /$$$$$$$| $$  \\ $$\r\n| $$  | $$ /$$__ " +
@@ -15,8 +15,8 @@ internal class Ascii
         "$$$$$$$| $$  | $$\r\n|__/  |__/ \\_______/|__/  |__/ \\____  $$|__/     |__/ \\_______/|__/  |__/\r\n                 " +
         "              /$$  \\ $$                                 \r\n                              |  $$$$$$/                     " +
         "            \r\n                               \\______/ ";
-    
-     public static string[] HangAroundPic =
+
+     string[] _hangAroundPic =
         {
         "____\r\n|/   |\r\n|   \r\n|    \r\n|    \r\n|    \r\n|\r\n|_____",
         " ____\r\n|/   |\r\n|   (_)\r\n|    \r\n|    \r\n|    \r\n|\r\n|_____",
@@ -28,6 +28,13 @@ internal class Ascii
         " ____\r\n|/   |\r\n|   (_)\r\n|   /|\\\r\n|    |\r\n|   | |\r\n|\r\n|_____",
         };
 
+    public string[] HangAroundPic 
+    {
+        get {  return _hangAroundPic; }
+        
+    }
+
+
     /// <summary>
     /// Clears console then print yellow logo and finally resets color
     /// </summary>
@@ -37,7 +44,7 @@ internal class Ascii
 
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Yellow;
-        foreach (char letter in asci)
+        foreach (char letter in LogoHangMan)
             Console.Write(letter);
         Console.ResetColor();
     }
@@ -50,16 +57,9 @@ internal class Ascii
     {
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Green;
-        foreach (char letter in asci)
+        foreach (char letter in LogoHangMan)
             Console.Write(letter);
         Console.ResetColor();
-
-    }
-
-
-    public static void printLast()
-    {
-        
 
     }
 }
