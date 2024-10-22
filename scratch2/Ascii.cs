@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace scratch2;
 internal class Ascii
 {
-    public static string asci = " /$$   /$$                               /$$      /$$                    \r\n| $$  | $$                              " +
+    static string asci = " /$$   /$$                               /$$      /$$                    \r\n| $$  | $$                              " +
          "\r| $$$    /$$$                    \r\n| $$  | $$  /$$$$$$  /$$$$$$$   /$$$$$$ | $$$$  /$$$$  /$$$$$$  \r" +
          "/$$$$$$$ \r\n| $$$$$$$$ |____  $$| $$__  $$ /$$__  $$| $$ $$/$$ $$ |____  " +
          "$$| $$__  $$\r\n| $$__  $$  /$$$$$$$| $$  \\ $$| $$  \\ $$| $$  $$$| $$  /$$$$$$$| $$  \\ $$\r\n| $$  | $$ /$$__ " +
@@ -31,13 +31,13 @@ internal class Ascii
     /// <summary>
     /// Clears console then print yellow logo and finally resets color
     /// </summary>
-    /// <param name="message"></param>
-    public static void PrintHangmanLogoYellow(string message)
+    /// <param name="asci"></param>
+    public static void PrintHangmanLogoYellow()
     {
 
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Yellow;
-        foreach (char letter in message)
+        foreach (char letter in asci)
             Console.Write(letter);
         Console.ResetColor();
     }
@@ -45,12 +45,12 @@ internal class Ascii
     /// <summary>
     /// Clears console then print green logo and finally resets color
     /// </summary>
-    /// <param name="message"></param>
-    public static void PrintHangmanLogoGreen(string message)
+    /// <param name="asci"></param>
+    public static void PrintHangmanLogoGreen()
     {
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Green;
-        foreach (char letter in message)
+        foreach (char letter in asci)
             Console.Write(letter);
         Console.ResetColor();
 

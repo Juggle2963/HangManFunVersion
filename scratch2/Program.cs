@@ -31,11 +31,11 @@ internal class Program
         }
         catch (FileNotFoundException e)
         {
-            
+            Console.WriteLine($"Filen kunde inte hittas{e}");
         }
-        catch (Exception)
+        catch (Exception e)
         {
-
+            Console.WriteLine($"Något gick fel{e}");
         }
     }
 
@@ -63,7 +63,7 @@ internal class Program
     private static void Rungame()
     {
         List<char> checkForGuessedLetter = new List<char>();
-        Ascii.PrintHangmanLogoGreen(Ascii.asci);
+        Ascii.PrintHangmanLogoGreen();
 
         for (int i = 0; i < Ascii.HangAround.Length; i++)
         {
@@ -177,7 +177,7 @@ internal class Program
     private static void PlayerWin()
     {
         Console.Clear();
-        Ascii.PrintHangmanLogoGreen(Ascii.asci);
+        Ascii.PrintHangmanLogoGreen();
 
         double finalPercentage = Math.Round(correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
         //Math.Round(finalPercentage);
@@ -220,7 +220,7 @@ internal class Program
 
     private static void CreatePlayer()
     {
-        Ascii.PrintHangmanLogoGreen(Ascii.asci);
+        Ascii.PrintHangmanLogoGreen();
 
         Console.CursorVisible = false;
         Console.SetCursorPosition(28, 15);
@@ -256,7 +256,7 @@ internal class Program
 
     static int WelcomeScreen()
     {
-        Ascii.PrintHangmanLogoYellow(Ascii.asci);
+        Ascii.PrintHangmanLogoYellow();
 
         MenuText = ["1player", "Reset highscore", "Highscore", "Exit"];
         const int cursorXpos = 20;
@@ -336,7 +336,7 @@ internal class Program
             }
         } while (key != ConsoleKey.Escape);
         Console.Clear();
-        Ascii.PrintHangmanLogoGreen(Ascii.asci);
+        Ascii.PrintHangmanLogoGreen();
         Console.ForegroundColor = ConsoleColor.Yellow;
         ClearLine();
         Console.WriteLine("Vill du verkligen avsluta spelet?");
