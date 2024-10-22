@@ -54,14 +54,17 @@ internal class Program
 
     private static void LoadHighscore()
     {
-        string fromJson = File.ReadAllText(jsonHighscoreFilePath);
         try
         {
+            string fromJson = File.ReadAllText(jsonHighscoreFilePath);
             highscore = JsonSerializer.Deserialize<List<Tuple<string, double>>>(fromJson)!;
 
         }
         catch (FileNotFoundException)
         {
+            string ifNoFileJson = JsonSerializer.Serialize(highscore);
+
+            File.WriteAllText(jsonHighscoreFilePath, ifNoFileJson);
         }
     }
 
@@ -160,7 +163,7 @@ internal class Program
         ClearLine2();
         Console.Write("[y] [n]");
         ClearLineBottomPic();
-        Console.Write(graphic!.HangAroundPic[graphic.HangAroundPic.Length-1]);
+        Console.Write(graphic!.HangAroundPic[graphic.HangAroundPic.Length - 1]);
         ConsoleKey key;
         key = Console.ReadKey().Key;
 
