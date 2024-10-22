@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -15,6 +16,7 @@ internal class Program
     static char[] wordShowedForPlayer;
     static PlayerInfo player;
     static string jsonHighscoreFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Highscore.json");
+    static Ascii graphic;
     static void Main(string[] args)
     {
         try
@@ -63,9 +65,9 @@ internal class Program
     private static void Rungame()
     {
         List<char> checkForGuessedLetter = new List<char>();
-        Ascii.PrintHangmanLogoGreen();
+        graphic.PrintHangmanLogoGreen();
 
-        for (int i = 0; i < Ascii.HangAround.Length; i++)
+        for (int i = 0; i < Ascii.HangAroundPic.Length; i++)
         {
             char guessedletter;
 
@@ -115,7 +117,7 @@ internal class Program
             }
 
             ClearLineBottomPic();
-            Console.Write(Ascii.HangAround[i]);
+            Console.Write(Ascii.HangAroundPic[i]);
         }
         PlayerLose();
     }
@@ -155,7 +157,7 @@ internal class Program
         ClearLine2();
         Console.Write("[y] [n]");
         ClearLineBottomPic();
-        Console.Write(Ascii.HangAround[Ascii.HangAround.Length-1]);
+        Console.Write(Ascii.HangAroundPic[Ascii.HangAroundPic.Length-1]);
         ConsoleKey key;
         key = Console.ReadKey().Key;
 
@@ -177,7 +179,7 @@ internal class Program
     private static void PlayerWin()
     {
         Console.Clear();
-        Ascii.PrintHangmanLogoGreen();
+        graphic.PrintHangmanLogoGreen();
 
         double finalPercentage = Math.Round(correctGuesses / player.totalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
         //Math.Round(finalPercentage);
@@ -220,7 +222,7 @@ internal class Program
 
     private static void CreatePlayer()
     {
-        Ascii.PrintHangmanLogoGreen();
+        graphic.PrintHangmanLogoGreen();
 
         Console.CursorVisible = false;
         Console.SetCursorPosition(28, 15);
@@ -256,7 +258,7 @@ internal class Program
 
     static int WelcomeScreen()
     {
-        Ascii.PrintHangmanLogoYellow();
+        graphic.PrintHangmanLogoYellow();
 
         MenuText = ["1player", "Reset highscore", "Highscore", "Exit"];
         const int cursorXpos = 20;
@@ -336,7 +338,7 @@ internal class Program
             }
         } while (key != ConsoleKey.Escape);
         Console.Clear();
-        Ascii.PrintHangmanLogoGreen();
+        graphic.PrintHangmanLogoGreen();
         Console.ForegroundColor = ConsoleColor.Yellow;
         ClearLine();
         Console.WriteLine("Vill du verkligen avsluta spelet?");

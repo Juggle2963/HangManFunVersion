@@ -16,7 +16,7 @@ internal class Ascii
         "              /$$  \\ $$                                 \r\n                              |  $$$$$$/                     " +
         "            \r\n                               \\______/ ";
     
-     public static string[] HangAround =
+     public static string[] HangAroundPic =
         {
         "____\r\n|/   |\r\n|   \r\n|    \r\n|    \r\n|    \r\n|\r\n|_____",
         " ____\r\n|/   |\r\n|   (_)\r\n|    \r\n|    \r\n|    \r\n|\r\n|_____",
@@ -32,7 +32,7 @@ internal class Ascii
     /// Clears console then print yellow logo and finally resets color
     /// </summary>
     /// <param name="asci"></param>
-    public static void PrintHangmanLogoYellow()
+    public void PrintHangmanLogoYellow()
     {
 
         Console.Clear();
@@ -46,7 +46,7 @@ internal class Ascii
     /// Clears console then print green logo and finally resets color
     /// </summary>
     /// <param name="asci"></param>
-    public static void PrintHangmanLogoGreen()
+    public void PrintHangmanLogoGreen()
     {
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Green;
