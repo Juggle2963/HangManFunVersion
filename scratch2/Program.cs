@@ -39,18 +39,16 @@ internal class Program
         {
             Console.WriteLine($"Något gick fel{e}");
         }
-        finally
-        {
-
-        }
     }
 
+    #region Savehighscore LoadHighscore
     private static void SaveHighScore()
     {
         string toJson = JsonSerializer.Serialize(highscore);
 
         File.WriteAllText(jsonHighscoreFilePath, toJson);
     }
+    
 
     private static void LoadHighscore()
     {
@@ -65,9 +63,57 @@ internal class Program
             string ifNoFileJson = JsonSerializer.Serialize(highscore);
 
             File.WriteAllText(jsonHighscoreFilePath, ifNoFileJson);
+
+            throw new FileNotFoundException("Could not find json file, created new file");
+
         }
     }
+    #endregion
 
+
+    #region Create word and Player
+    private static void CreateWord()
+    {
+        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Randomwords.txt");
+        string[] tempArray;
+        try
+        {
+            tempArray = File.ReadAllLines(filePath);
+            chosenWord = tempArray[Random.Shared.Next(tempArray.Length)];
+
+        }
+        catch (FileNotFoundException)
+        {
+            tempArray = ["imperiet", "direstraits", "inflames"];
+            File.WriteAllLines(filePath, tempArray);
+            chosenWord = tempArray[Random.Shared.Next(tempArray.Length)];
+
+            throw new FileNotFoundException("Could not find json file, created new file");
+        }
+        wordShowedForPlayer = new char[chosenWord.Length];
+        Array.Fill(wordShowedForPlayer, '_');
+    }
+    private static void CreatePlayer()
+    {
+        graphic!.PrintHangmanLogoGreen();
+
+        Console.CursorVisible = false;
+        Console.SetCursorPosition(28, 15);
+
+
+        Console.Write("Enter players name: ");
+        string? input = Console.ReadLine();
+        while (input!.Length < 2)
+        {
+            Console.WriteLine("Players name must be atleast 2 letters");
+            input = Console.ReadLine();
+        }
+        player = new PlayerInfo(input);
+    }
+    #endregion
+
+
+    #region Rungame
     private static void Rungame()
     {
         List<char> checkForGuessedLetter = new List<char>();
@@ -127,7 +173,10 @@ internal class Program
         }
         PlayerLose();
     }
+    #endregion
 
+
+    #region Text and Picture Positions
     private static void ClearLineBottomPic()
     {
         Console.SetCursorPosition(1, 20);
@@ -154,7 +203,10 @@ internal class Program
         Console.Write(new string(' ', Console.BufferWidth));
         Console.SetCursorPosition(28, 17);
     }
+    #endregion
 
+
+    #region PlayerWin PlayerLose
     private static void PlayerLose()
     {
         ClearLine();
@@ -188,8 +240,6 @@ internal class Program
         graphic!.PrintHangmanLogoGreen();
 
         double finalPercentage = Math.Round(correctGuesses / player!.TotalTries * 100); // Uträkning för hur stor andel rätt spelaren hade i förhållande till antal gissningar i % 
-        //Math.Round(finalPercentage);
-
 
 
         highscore.Add(Tuple.Create(player.Name, finalPercentage));
@@ -200,7 +250,6 @@ internal class Program
             highscore = highscore.Take(5).ToList();
 
         SaveHighScore();
-
 
         ClearLine();
         Console.Write($"Congrats {player.Name}, you managed to get {finalPercentage} points");
@@ -215,53 +264,21 @@ internal class Program
         Restart();
 
     }
+    #endregion
 
+
+    #region RestartGame
     private static void Restart()
     {
-        //Process.Start(Environment.GetCommandLineArgs()[0]);
-        //string path = Process.GetCurrentProcess().MainModule.FileName;
         string? pathToExe = Environment.ProcessPath;
         Process.Start(pathToExe!);
 
         Environment.Exit(0);
     }
-
-    private static void CreatePlayer()
-    {
-        graphic!.PrintHangmanLogoGreen();
-
-        Console.CursorVisible = false;
-        Console.SetCursorPosition(28, 15);
+    #endregion
 
 
-        Console.Write("Enter players name: ");
-        string? input = Console.ReadLine();
-        while (input!.Length < 2)
-        {
-            Console.WriteLine("Players name must be atleast 2 letters");
-            input = Console.ReadLine();
-        }
-        player = new PlayerInfo(input);
-    }
-
-    private static void CreateWord()
-    {
-        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Randomwords.txt");
-        string[] tempArray;
-        try
-        {
-            tempArray = File.ReadAllLines(filePath);
-            chosenWord = tempArray[Random.Shared.Next(tempArray.Length)];
-
-        }
-        catch (FileNotFoundException)
-        {
-
-        }
-        wordShowedForPlayer = new char[chosenWord.Length];
-        Array.Fill(wordShowedForPlayer, '_');
-    }
-
+    #region WelcomeScreen
     static int WelcomeScreen()
     {
         graphic!.PrintHangmanLogoYellow();
@@ -280,7 +297,6 @@ internal class Program
 
             for (int i = 0; i < MenuText.Length; i++)
             {
-                //i==0 ? Console.SetCursorPosition(choice1Xpos, choice1Ypos) : Console.SetCursorPosition(choice1Xpos + (i * choice1Xpos), choice1Ypos);
 
                 Console.SetCursorPosition(cursorXpos + (i % 2) * 15, cursorYpos + i / 2);
                 if (currentChoice == i)
@@ -339,7 +355,10 @@ internal class Program
                     break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nAnvänd bara pilar och enter för att välja");
+                    ClearLine2();
+                    Console.Write("Använd bara pilar och enter för att välja");
+                    Thread.Sleep(3000);
+                    ClearLine2();
                     break;
             }
         } while (key != ConsoleKey.Escape);
@@ -363,20 +382,21 @@ internal class Program
             Thread.Sleep(2000);
         }
     }
+    #endregion
 
+
+    #region PrintHighScore
     private static void PrintHighscore()
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Highscore");
         Console.ForegroundColor = ConsoleColor.Blue;
-        //string formt= string.Format()
+
         foreach (var score in highscore)
         {
             var writeTable = string.Format("{0,-10} {1,4}", score.Item1, (int)score.Item2);
             Console.WriteLine(writeTable);
         }
-
-
-
     }
+    #endregion
 }
